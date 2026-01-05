@@ -1,0 +1,185 @@
+import pandas as pd
+#import seaborn as sns
+import csv
+import sys
+
+def get_column_name(num):
+    name = ""
+    while num > 0:
+        num -= 1
+        name = chr(65 + num % 26) + name
+        num //= 26
+    return name
+
+# --- SECTION 1: DATA LOADING & CLEANING ---
+print("--- 1. DATA PREPARATION ---")
+
+# Replace this with your exact full path
+#FILE_PATH = r'D:\downloads\Gdataset_SRM.xlsx'
+FILE_PATH = r'D:\downloads\Poo_Data.xlsx'
+df = pd.read_excel(FILE_PATH)
+
+# try:
+#     # 1.1 Load the Excel file
+#     df = pd.read_excel(FILE_PATH)
+#     print(f"✅ Data loaded successfully. Total rows: {len(df)}")
+    
+#     # 1.2 FIX: Remove rows with missing values (NaN)
+#     # This prevents the "ValueError: Input contains NaN"
+#     df.dropna(inplace=True)
+#     print(f"✅ Data cleaned. Rows remaining after removing empty cells: {len(df)}")
+
+# except Exception as e:
+#     print(f"❌ Error: {e}")
+#     exit()
+
+
+# Coluumn 1 = F1-1940 ; 2 = F2-2041 ; 3 = F3-2176 ; 4 = F4-2283	; 5 = Category
+
+#Sample Values to check
+#0.50242	0.16563	0.07015	0.09732 WL-NM-WB
+#0.49528	0.17898	0.10714	0.11783	WL-NM-PICK
+
+
+#file_path = r'D:\downloads\Poo_Data.csv'
+file_path = r'D:\downloads\Sample_dataset_FDP_Vasagam.csv'
+# Read CSV file
+file = open(file_path, "r", encoding="utf-8-sig")
+reader = csv.reader(file)
+data = []
+for row in reader:
+    data.append(row)
+file.close()
+
+# Count rows
+total_rows = 0
+r = 0
+for r in data:
+    total_rows = total_rows + 1
+
+# Count columns
+total_columns = 0
+for c in data[0]:
+    total_columns = total_columns + 1
+
+print("Total rows:", total_rows)
+print("Total columns:", total_columns)
+
+value_columns = total_columns - 1
+
+# Get both rows and columns at once using the .shape attribute
+# It returns a tuple: (number of rows, number of columns)
+rows, columns = df.shape
+#print(f"Total Rows: {rows}")
+#print(f"Total Columns: {columns}")
+
+# Alternatively, access them individually
+row_count = df.shape[0]  # Accesses the first element of the tuple
+col_count = df.shape[1] # Accesses the second element of the tuple
+
+# Other methods for row count
+row_count_len = len(df) # Returns length of index
+column_count_len = df.shape[1] # Returns length of index
+print("Row Count Length = ", row_count_len)
+print("Column Count Length = ", column_count_len)
+
+
+# Main loop
+while True:
+
+    # #row_count_len
+    # # Iterate through each row in the data
+    # for i in range(0,2):
+    #     # define model
+    #     #print("Row = ",i)
+    #     for j in range (1, column_count_len):
+    #         print("Row = ",i)
+    #         print("Column = ", j)
+    #         print("Value = ", df.loc[i][j])
+    
+    while True:
+       user_input = input("Enter values for Class A, B, C, D (separated by space): ")
+       
+       # 2. Split the string into a list of floats
+       input_values = [float(val) for val in user_input.split()]    
+       val22 = input_values
+               
+       print("\nSearching for:", input_values, "and lenght = ", len(input_values))
+         
+       count = 4
+       
+       if count != len(input_values):
+           print("❌ Invalid input. Please enter correct FLOAT values.")
+       else:
+           break 
+    
+    found_any = 0
+    results = []
+    
+    # Search through CSV data
+    for i in range(0, total_rows):
+    
+        flags = []
+    
+        for j in range(value_columns):
+            csv_value = float(data[i][j])
+    
+            if csv_value == input_values[j]:
+                flags.append(1)
+            else:
+                flags.append(0)
+    
+        all_match = 1
+        for f in flags:
+            if f == 0:
+                all_match = 0
+                break
+    
+        if all_match == 1:
+            results.append(data[i][total_columns - 1])
+            found_any = 1
+    
+    # Output
+    if found_any == 1:
+        print("\nFOUND in the database of NIR spectrum of the samples")
+        print("=====")
+        for value in results:
+            print(value)
+    else:
+        print("\nNOT FOUND in the database of NIR spectrum of the samples")
+    
+    while True:        
+        print("\nWhat would you like to do next?")
+        print("1. Find another values")
+        print("2. Exit")
+    
+        choice = input("Enter your choice: ")
+    
+        if choice == "1":
+            break
+        elif choice == "2":
+            print("Exiting program.../nProgram exited successfully")
+            sys.exit()            
+        else:
+            print("Invalid choice. Please enter 1 or 2.")           
+            
+
+# # 3. Check if we have exactly 4 values
+# if len(input_values) != 4:
+#     print(f"❌ Error: You must enter exactly 4 values (you entered {len(input_values)}).")
+# else:
+#     #print("Else part - containg 4 values")
+#     for iinput in input_values:
+#         print("iinput = ", iinput)
+#         for i in range(0,1):
+#             # define model
+#             print("Main Row = ",i)
+#             for j in range (i, column_count_len):
+#                 print("Current Row = ",i)
+#                 print("Current Column = ", j)
+#                 Value = df.loc[i][j]
+#                 print("Value = ", Value)                
+#                 if iinput == Value:
+#                     print("Matching")
+#                 else:
+#                     print("not Matching")
